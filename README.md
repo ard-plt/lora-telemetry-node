@@ -111,19 +111,6 @@ Application Settings → Comm Links → Add:
 | 38 | 1 | uint8 | armed |
 | 39 | 1 | uint8 | checksum (XOR 0–38) |
 
-## Geliştirme Aşamaları
-
-- [x] Aşama 1 — PlatformIO İskeleti
-- [x] Aşama 2 — MAVLink Parse Katmanı
-- [x] Aşama 2b — MAVLink Simülatör (tools/)
-- [x] Aşama 3 — Paket Serialize / Deserialize
-- [x] Aşama 4 — LoRa TX (E22 UART transparent mod)
-- [x] Aşama 4.5 — AES-128-CTR Şifreleme
-- [x] Aşama 5 — LoRa RX
-- [x] Aşama 6 — QGroundControl MAVLink çıkışı
-- [ ] Aşama 7 — SF Karşılaştırma & Link Budget
-- [ ] Aşama 8 — GitHub Hazırlığı (donanım şeması, link budget)
-
 ## Lisans
 
 MIT
