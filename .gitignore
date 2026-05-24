@@ -1,0 +1,29 @@
+# PlatformIO
+.pio/
+.pioenvs/
+.piolibdeps/
+tx-node/.pio/
+rx-node/.pio/
+
+# IDE
+.vscode/
+.idea/
+*.code-workspace
+
+# Claude Code
+.claude/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+venv/
+.env
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Çıktı dosyaları
+*.csv
+*.log
