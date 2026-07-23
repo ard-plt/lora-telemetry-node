@@ -1,177 +1,186 @@
 #include <Arduino.h>
-#include "mavlink_reader.h"
 #include "lora_tx.h"
+#include "mavlink_reader.h"
 #include "crypto.h"
 #include "packet.h"
+#include "lora_modes.h"
+#include "web_config.h"
+#include "sync_command.h"
+#include "link_led.h"
 
-static MavlinkReader reader;
-static LoraTx        lora;
-static uint8_t       seq      = 0;
-static uint32_t      lastSendMs = 0;
-static uint32_t      lastLogMs  = 0;
+#define LED_PIN         2
+#define CONFIG_BTN_PIN  9   // momentary buton: 3sn basili tutulunca web config AP'si acilir
 
-// Serialize → deserialize loopback testi — setup'ta bir kez çalışır
-static void run_loopback_test() {
-    Serial.println("\n=== Loopback Testi ===");
+// NOT: MavlinkReader kendi içinde Serial2'yi kullanıyor (mavlink_reader.cpp).
+// LoraTx de kendi içinde Serial1'i kullanıyor (lora_tx.cpp). Aynı UART'a
+// ikinci bir HardwareSerial nesnesiyle erişmiyoruz - çakışma olur. Kalibrasyon
+// modunda E22'ye ham bayt yazmak için de doğrudan global Serial1'i kullanıyoruz.
 
-    // Bilinen değerlerle sahte MavlinkData
-    MavlinkData src = {};
-    src.armed        = 1;
-    src.flight_mode  = 3;
-    src.lat          = 399123456;    // 39.9123456°
-    src.lon          = 329876543;    // 32.9876543°
-    src.alt          = 850000;       // 850.000 m MSL (mm cinsinden)
-    src.relative_alt = 12500;        // 125.0 m (mm → cm = 1250 cm)
-    src.groundspeed  = 15.5f;        // m/s → 1550 cm/s
-    src.airspeed     = 16.2f;        // m/s → 1620 cm/s
-    src.hdg          = 27350;        // 273.50°
-    src.roll         = 0.1745f;      // ~10° radyan → 1000 cdeg
-    src.pitch        = -0.0873f;     // ~-5° radyan → -500 cdeg
-    src.yaw          = 2.7925f;      // ~160° radyan → 16000 cdeg
-    src.climb        = 1.2f;         // m/s → 120 cm/s
-    src.vbat_mv      = 14800;        // 14.800 V
-    src.current_ca   = 230;          // 23.0 A (centiamps) → 23 da
-    src.battery_pct  = 72;
-    src.lidar_cm     = 430;          // 4.30 m
+static LoraTx         lora;   // uzun menzil modunda paket göndermek için
+static MavlinkReader  mav;
+static WebConfigPortal webConfig;
+static LinkLed        linkLed;    // eslesme durumuna gore yanip-soner/sabit yanar (bkz. common/link_led.h)
 
-    // Serialize
-    TelemetryPacket pkt;
-    pack_telemetry(&src, &pkt, 42);
+static BridgeMode currentBridge;
+static AirRate    currentRate;
+static uint32_t   lastSendMs         = 0;
+static uint32_t   lastPingReceivedMs = 0; // RX'ten son SYNC_TYPE_PING'in alindigi an - eslesme/LED icin
+static uint8_t    seq                = 0;
 
-    // Ham byte dizisine dönüştür (memcpy simülasyonu)
-    uint8_t buf[PACKET_SIZE];
-    memcpy(buf, &pkt, PACKET_SIZE);
+// Mevcut air rate'e göre E22'yi ve UART hızını yeniden ayarla. BridgeMode'un
+// REG0 üzerinde etkisi yok (yalnızca loop()'un hangi dalını çalıştıracağını
+// belirler) — o yüzden burada sadece currentRate kullanılır.
+void applyProfile() {
+    LoraProfile p = lora_build_profile(currentRate);
+    Serial.printf("\n[PROFIL] Bridge=%s Rate=%s\n", bridge_mode_name(currentBridge), p.name);
 
-    // Deserialize
-    TelemetryPacket out;
-    bool ok = unpack_telemetry(buf, &out);
+    bool ok = lora_apply_profile(Serial1, LORA_M0_PIN, LORA_M1_PIN, LORA_AUX_PIN, p);
+    Serial1.updateBaudRate(p.uartBaud);
 
-    // Sonuçları karşılaştır
-    bool pass = true;
-    #define CHECK(field, expected) \
-        if (out.field != expected) { \
-            Serial.printf("  FAIL  %-20s  got=%ld  exp=%ld\n", \
-                          #field, (long)out.field, (long)(expected)); \
-            pass = false; \
-        } else { \
-            Serial.printf("  PASS  %-20s  = %ld\n", #field, (long)out.field); \
-        }
+    if (!ok) Serial.println("[UYARI] E22 config yaniti alinamadi, modul zaten ayarli olabilir");
 
-    if (!ok) { Serial.println("  FAIL  checksum veya header hatasi!"); pass = false; }
-
-    CHECK(header,         PACKET_HEADER)
-    CHECK(seq_id,         42)
-    CHECK(latitude,       399123456)
-    CHECK(longitude,      329876543)
-    CHECK(altitude_mm,    850000)
-    CHECK(relative_alt_cm, 1250)          // 12500 mm / 10
-    CHECK(groundspeed_cms, 1550)
-    CHECK(airspeed_cms,    1620)
-    CHECK(heading_cd,      27350)
-    CHECK(roll_cd,         1000)           // 10°×100
-    CHECK(pitch_cd,        -500)
-    CHECK(battery_pct,     72)
-    CHECK(flight_mode,     3)
-    CHECK(armed,           1)
-    CHECK(lidar_cm,        430)
-
-    #undef CHECK
-
-    Serial.printf("\n=== Loopback Sonuc: %s ===\n\n", pass ? "GECTI" : "BASARISIZ");
+    if (currentBridge == BRIDGE_TRANSPARENT) {
+        Serial.println("[MOD] Transparan kopru aktif - Mission Planner tam erisim");
+    } else {
+        Serial.println("[MOD] Sikistirilmis+sifreli telemetri aktif");
+    }
 }
 
-// AES-128-CTR encrypt → decrypt loopback testi
-static void run_crypto_test() {
-    Serial.println("=== Crypto Loopback Testi ===");
+// ===== WebConfigPortal callback'leri =====
+static BridgeMode wcGetMode() { return currentBridge; }
 
-    // Bilinen bir TelemetryPacket oluştur
-    MavlinkData src = {};
-    src.lat = 399123456; src.lon = 329876543; src.alt = 850000;
-    src.vbat_mv = 14800; src.battery_pct = 72; src.armed = 1;
-    TelemetryPacket plain_pkt;
-    pack_telemetry(&src, &plain_pkt, 99);
+static void wcSetMode(BridgeMode mode) {
+    currentBridge = mode;
+    applyProfile();
+}
 
-    // Şifrele
-    uint8_t enc_buf[ENCRYPTED_SIZE];
-    encrypt_packet((uint8_t*)&plain_pkt, enc_buf, plain_pkt.seq_id, 123456);
+static AirRate wcGetAirRate() { return currentRate; }
 
-    // Şifreli verinin düz metinden farklı olduğunu doğrula
-    bool differs = (memcmp(enc_buf + 8, &plain_pkt, PACKET_SIZE) != 0);
-    Serial.printf("  %s  Sifreleme degistiriyor\n", differs ? "PASS" : "FAIL");
+static void wcSetAirRate(AirRate rate) {
+    currentRate = rate;
+    applyProfile();
+}
 
-    // Çöz
-    uint8_t dec_buf[PACKET_SIZE];
-    decrypt_packet(enc_buf, dec_buf);
+static uint32_t wcGetPacketCount() { return seq; }
+static uint32_t wcGetLastEventAgoMs() { return millis() - lastSendMs; }
 
-    // Çözülen veri orijinalle eşleşmeli
-    bool matches = (memcmp(dec_buf, &plain_pkt, PACKET_SIZE) == 0);
-    Serial.printf("  %s  Decrypt == plaintext\n", matches ? "PASS" : "FAIL");
+// Pixhawk'tan okunan batarya voltajını /status JSON'una ekler
+static void wcAppendExtraStatus(String& json) {
+    json += ",\"vbat_mv\":" + String(mav.getData().vbat_mv);
+}
 
-    // Checksum hâlâ geçerli mi?
-    TelemetryPacket recovered;
-    bool ok = unpack_telemetry(dec_buf, &recovered);
-    Serial.printf("  %s  Checksum gecerli\n", ok ? "PASS" : "FAIL");
+// RX-master senkronizasyonu: RX'ten gecerli (magic+HMAC dogrulanmis) bir
+// SYNC_TYPE_CMD alindiginda cagrilir. ONCE ACK'i MEVCUT (henuz degismemis)
+// profille gonderiyoruz - RX hala eski air rate/REG0'da dinlerken ACK'i
+// alabilsin diye. Sira TERSI olsaydi (once profili degistirip sonra ACK
+// gondermek) air-rate degisen senkronizasyonlarda ACK, RX'in artik dinlemedigi
+// bir REG0/baud'da gonderilecegi icin HICBIR ZAMAN ulasmazdi (bkz.
+// rx-node/lib/sync_master/sync_master.h ustundeki ayni aciklama).
+static void txHandleSyncCommand(BridgeMode mode, AirRate rate) {
+    SyncPacket ack;
+    sync_build_packet(SYNC_TYPE_ACK, mode, rate, ack);
+    Serial1.write((uint8_t*)&ack, sizeof(ack));
+    Serial1.flush();
 
-    Serial.printf("  Nonce: %02X %02X %02X %02X %02X %02X %02X %02X\n",
-                  enc_buf[0], enc_buf[1], enc_buf[2], enc_buf[3],
-                  enc_buf[4], enc_buf[5], enc_buf[6], enc_buf[7]);
+    Serial.printf("[SYNC] RX'ten komut alindi: Bridge=%s Rate=%s - ACK gonderildi, profil uygulaniyor\n",
+                  bridge_mode_name(mode), air_rate_name(rate));
 
-    Serial.printf("\n=== Crypto Sonuc: %s ===\n\n",
-                  (differs && matches && ok) ? "GECTI" : "BASARISIZ");
+    currentBridge = mode;
+    currentRate   = rate;
+    applyProfile();
+}
+
+// sync_scan()/sync_relay_with_filter() duz fonksiyon pointer bekliyor - RX'ten
+// gelen SYNC_TYPE_CMD ve SYNC_TYPE_PING'i isler (ayni HMAC dogrulamali
+// mekanizmayi paylasirlar, bkz. sync_command.h), kendi urettigimiz
+// SYNC_TYPE_ACK'i (normalde bu yonde hic gelmez ama savunmaci olsun diye) yoksayar.
+static void txSyncPacketHandler(SyncPacketType type, BridgeMode mode, AirRate rate) {
+    if (type == SYNC_TYPE_PING) {
+        lastPingReceivedMs = millis(); // eslesme/LED durumu icin - ACK gerekmez
+        return;
+    }
+    if (type != SYNC_TYPE_CMD) return;
+    txHandleSyncCommand(mode, rate);
 }
 
 void setup() {
     Serial.begin(115200);
-    Serial.println("[TX] LoRa Telemetry TX Node basliyor...");
 
-    run_loopback_test();
-    run_crypto_test();
+    linkLed.begin(LED_PIN);
+    pinMode(CONFIG_BTN_PIN, INPUT_PULLUP);
+    pinMode(LORA_M0_PIN, OUTPUT);
+    pinMode(LORA_M1_PIN, OUTPUT);
+    pinMode(LORA_AUX_PIN, INPUT);
 
-    reader.begin();
-    Serial.printf("[TX] UART2 baslatildi: %d baud, RX=GPIO%d TX=GPIO%d\n",
-                  MAVLINK_BAUD, MAVLINK_RX_PIN, MAVLINK_TX_PIN);
+    // Pixhawk TELEM2 -> Serial2 (mav.begin() bunu içeride başlatıyor)
+    mav.begin();
 
-    lora.begin();  // hata olursa log basar ama devam eder
+    // E22 UART'ı başlat (başlangıç hızı önemsiz, applyMode hemen düzeltecek)
+    Serial1.begin(9600, SERIAL_8N1, LORA_ESP_RX_PIN, LORA_ESP_TX_PIN);
+    delay(100);
+
+    // Açılışta NVS'te kayıtlı son bridge mode + air rate'i uygula (ilk açılışta
+    // varsayılan: UZUN MENZIL + o bridge mode'un varsayılan air rate'i)
+    currentBridge = WebConfigPortal::loadSavedMode("txcfg", BRIDGE_COMPRESSED);
+    currentRate   = WebConfigPortal::loadSavedAirRate("txcfg", default_air_rate_for(currentBridge));
+    applyProfile();
+
+    WebConfigCallbacks cb;
+    cb.apSsid                 = "TUAV-TX-Config";
+    cb.nvsNamespace            = "txcfg";
+    cb.getMode                 = wcGetMode;
+    cb.setMode                 = wcSetMode;
+    cb.getAirRate              = wcGetAirRate;
+    cb.setAirRate              = wcSetAirRate;
+    cb.getPacketCount          = wcGetPacketCount;
+    cb.getLastEventAgoMs       = wcGetLastEventAgoMs;
+    cb.appendExtraStatusJson   = wcAppendExtraStatus;
+    webConfig.begin(cb);
 }
 
 void loop() {
-    // Pixhawk'tan gelen byte'ları sürekli parse et
-    reader.update();
+    // Buton 3sn basili tutulursa web config AP'sini acar; AP aciksa DNS/HTTP servis eder.
+    // Non-blocking - LoRa/MAVLink akisini bloke etmez.
+    webConfig.update(CONFIG_BTN_PIN);
 
-    uint32_t now = millis();
+    // Eslesme durumuna gore LED: eslesmemisken yanip soner, eslesince sabit
+    // yanar (bkz. common/link_led.h). Compressed daldaki erken "return"den
+    // ETKİLENMEMESİ icin en basta, her iki BridgeMode icin ortak guncelleniyor -
+    // "eslesik" = son WEB_CONFIG_PAIRED_WINDOW_MS (3sn) icinde RX'ten gecerli
+    // bir PING alindi mi.
+    bool paired = (millis() - lastPingReceivedMs) < WEB_CONFIG_PAIRED_WINDOW_MS;
+    linkLed.update(paired);
 
-    // 2 Hz LoRa gönderim döngüsü (her 500 ms)
-    if (now - lastSendMs >= LORA_SEND_INTERVAL_MS) {
+    if (currentBridge == BRIDGE_TRANSPARENT) {
+        // ---- TRANSPARAN KÖPRÜ: Pixhawk (Serial2) <-> E22 ham MAVLink ----
+        while (Serial2.available()) Serial1.write(Serial2.read());
+        // RX'ten gelen bir senkronizasyon komutunu Pixhawk'a sizdirmadan
+        // yakalar; geri kalan her seyi (ham MAVLink) oldugu gibi Serial2'ye
+        // iletir - bkz. sync_command.h dosya-ustu yorum (MAVLink kendi
+        // kendini senkronize eder, yanlis pozitif akisa kalici zarar vermez).
+        sync_relay_with_filter(Serial1, Serial2, txSyncPacketHandler);
+
+    } else {
+        // RX'ten bir senkronizasyon komutu gelmis mi diye bak - TX bu yonde
+        // (Serial1 RX) baska hicbir seyi tuketmedigi icin (yalnizca yaziyordu)
+        // surekli taramak guvenli, hicbir mevcut tuketiciyi bozmaz.
+        sync_scan(Serial1, txSyncPacketHandler);
+
+        // ---- UZUN MENZİL: parse -> pack -> sifrele -> gonder (2Hz) ----
+        mav.update();
+
+        uint32_t now = millis();
+        if (now - lastSendMs < LORA_SEND_INTERVAL_MS) return;
         lastSendMs = now;
 
-        // 1) Serialize
         TelemetryPacket pkt;
-        pack_telemetry(&reader.getData(), &pkt, seq++);
+        pack_telemetry(&mav.getData(), &pkt, seq++);
 
-        // 2) Şifrele: 40 byte → 48 byte [nonce8 | cipher40]
         uint8_t enc_buf[ENCRYPTED_SIZE];
-        encrypt_packet((uint8_t*)&pkt, enc_buf, pkt.seq_id, (uint32_t)now);
+        encrypt_packet((const uint8_t*)&pkt, enc_buf, pkt.seq_id, now);
 
-        // 3) LoRa ile gönder
-        if (lora.send_raw(enc_buf, ENCRYPTED_SIZE)) {
-            Serial.printf("[LoRa] sent seq=%d (encrypted) | armed=%d mode=%d "
-                          "lat=%.5f lon=%.5f alt=%.1fm vbat=%.2fV\n",
-                          pkt.seq_id, pkt.armed, pkt.flight_mode,
-                          pkt.latitude  / 1e7f,
-                          pkt.longitude / 1e7f,
-                          pkt.altitude_mm / 1000.0f,
-                          pkt.vbat_mv / 1000.0f);
-        }
-    }
+        bool ok = lora.send_raw(enc_buf, ENCRYPTED_SIZE);
 
-    // 5 saniyede bir MAVLink ham veri özeti (tanılama)
-    if (now - lastLogMs >= 5000) {
-        lastLogMs = now;
-        const MavlinkData& d = reader.getData();
-        Serial.printf("[MAV] roll=%.1f° pitch=%.1f° yaw=%.1f° "
-                      "gspd=%.1f aspd=%.1f climb=%.2f batt=%d%%\n",
-                      degrees(d.roll), degrees(d.pitch), degrees(d.yaw),
-                      d.groundspeed, d.airspeed, d.climb,
-                      (int)d.battery_pct);
+        Serial.printf("[TX] seq=%u %s\n", pkt.seq_id, ok ? "gonderildi" : "AUX timeout!");
     }
 }

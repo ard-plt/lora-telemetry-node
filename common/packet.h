@@ -20,30 +20,35 @@
 #define LORA_SEND_INTERVAL_MS 500   // 2 Hz
 
 // ===== UART Sabitleri =====
+// Pixhawk TELEM2 <-> TX node Serial2 (UART2) — sabit, moddan bağımsız
 #define MAVLINK_BAUD        57600
-#define GS_BAUD             115200
+// RX node Serial (USB) <-> PC/Mission Planner/QGC — sabit, moddan bağımsız
+// NOT: E22 <-> ESP32 (Serial1) baud'u BU SABİTİ KULLANMAZ — o mod'a göre
+// (KALİBRASYON/UZUN MENZİL) common/lora_modes.h'deki profile'lardan gelir.
+#define GS_BAUD              57600
 #define MAVLINK_UART_NUM    2       // ESP32 UART2
 #define MAVLINK_RX_PIN      16
 #define MAVLINK_TX_PIN      17
 
 // ===== E22 UART Pin Mapping =====
-// TX node: GPIO32/33 (GPIO16/17 Pixhawk için kullanılıyor)
-// RX node: GPIO17/16 (RX2/TX2 etiketli pinler) — platformio.ini'de override edilir
+// ESP32-S3-WROOM-1: GPIO 26-37 dahili Flash/PSRAM'a bağlı — kullanılamaz.
+// TX node: GPIO4/5 (GPIO16/17 Pixhawk UART2 için ayrılmış)
+// RX node: platformio.ini'de aynı pinler override edilir
 #ifndef LORA_ESP_TX_PIN
-#define LORA_ESP_TX_PIN     32      // ESP32 TX → E22 RX  (TX node varsayılanı)
+#define LORA_ESP_TX_PIN     5       // S3 TX → E22 RXD  (UART1)
 #endif
 #ifndef LORA_ESP_RX_PIN
-#define LORA_ESP_RX_PIN     33      // ESP32 RX ← E22 TX  (TX node varsayılanı)
+#define LORA_ESP_RX_PIN     4       // S3 RX ← E22 TXD  (UART1)
 #endif
 #define LORA_UART_BAUD      9600    // E22 varsayılan seri baud
 #ifndef LORA_M0_PIN
-#define LORA_M0_PIN         26      // Mode 0
+#define LORA_M0_PIN         7       // Mode 0
 #endif
 #ifndef LORA_M1_PIN
-#define LORA_M1_PIN         25      // Mode 1
+#define LORA_M1_PIN         8       // Mode 1
 #endif
 #ifndef LORA_AUX_PIN
-#define LORA_AUX_PIN        27      // HIGH = modül hazır
+#define LORA_AUX_PIN        6       // HIGH = modül hazır
 #endif
 
 // ===== Telemetri Paketi (40 byte, little-endian) =====

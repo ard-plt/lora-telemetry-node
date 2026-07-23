@@ -28,3 +28,6 @@ Thumbs.db
 # Çıktı dosyaları
 *.csv
 *.log
+
+# Gizli tuz/anahtar dosyaları — asla commit edilmemeli, bkz. common/secrets.h.example
+common/secrets.h
