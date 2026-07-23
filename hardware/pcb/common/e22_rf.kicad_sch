@@ -1,0 +1,451 @@
+(kicad_sch
+	(version 20250114)
+	(generator "tuav_gen_sch")
+	(generator_version "10.0")
+	(uuid "ba1b89bf-04a0-4bad-a303-0904e9859267")
+	(paper "A4")
+	(lib_symbols
+		(symbol "TUAV_Parts:E22-900T30D"
+				(exclude_from_sim no)
+				(in_bom yes)
+				(on_board yes)
+				(in_pos_files yes)
+				(duplicate_pin_numbers_are_jumpers no)
+				(property "Reference" "U"
+					(at -12.7 17.78 0)
+					(show_name no)
+					(do_not_autoplace no)
+					(effects (font (size 1.27 1.27)))
+				)
+				(property "Value" "E22-900T30D"
+					(at -12.7 20.32 0)
+					(show_name no)
+					(do_not_autoplace no)
+					(effects (font (size 1.27 1.27)))
+				)
+				(property "Footprint" "TUAV_Modules:E22-900T30D"
+					(at 0 0 0)
+					(show_name no)
+					(do_not_autoplace no)
+					(hide yes)
+					(effects (font (size 1.27 1.27)))
+				)
+				(property "Datasheet" "https://www.cdebyte.com/pdf-down.aspx?id=1230"
+					(at 0 0 0)
+					(show_name no)
+					(do_not_autoplace no)
+					(hide yes)
+					(effects (font (size 1.27 1.27)))
+				)
+				(property "Description" "EBYTE E22-900T30D SX1262 LoRa 868/915MHz 30dBm UART module (DIP, 1x7 + 1x4 GND, 2.54mm)"
+					(at 0 0 0)
+					(show_name no)
+					(do_not_autoplace no)
+					(hide yes)
+					(effects (font (size 1.27 1.27)))
+				)
+				(property "ki_keywords" "lora sx1262 e22 ebyte 868mhz uart radio"
+					(at 0 0 0)
+					(show_name no)
+					(do_not_autoplace no)
+					(hide yes)
+					(effects (font (size 1.27 1.27)))
+				)
+				(property "ki_fp_filters" "E22-900T30D"
+					(at 0 0 0)
+					(show_name no)
+					(do_not_autoplace no)
+					(hide yes)
+					(effects (font (size 1.27 1.27)))
+				)
+				(symbol "E22-900T30D_0_1"
+					(rectangle
+						(start -12.7 15.24)
+						(end 12.7 -17.78)
+						(stroke (width 0.254) (type default))
+						(fill (type background))
+					)
+				)
+				(symbol "E22-900T30D_1_1"
+					(pin input line
+						(at -17.78 10.16 0)
+						(length 5.08)
+						(name "M0"
+							(effects (font (size 1.27 1.27)))
+						)
+						(number "1"
+							(effects (font (size 1.27 1.27)))
+						)
+					)
+					(pin input line
+						(at -17.78 7.62 0)
+						(length 5.08)
+						(name "M1"
+							(effects (font (size 1.27 1.27)))
+						)
+						(number "2"
+							(effects (font (size 1.27 1.27)))
+						)
+					)
+					(pin input line
+						(at -17.78 5.08 0)
+						(length 5.08)
+						(name "RXD"
+							(effects (font (size 1.27 1.27)))
+						)
+						(number "3"
+							(effects (font (size 1.27 1.27)))
+						)
+					)
+					(pin output line
+						(at -17.78 2.54 0)
+						(length 5.08)
+						(name "TXD"
+							(effects (font (size 1.27 1.27)))
+						)
+						(number "4"
+							(effects (font (size 1.27 1.27)))
+						)
+					)
+					(pin output line
+						(at -17.78 0.0 0)
+						(length 5.08)
+						(name "AUX"
+							(effects (font (size 1.27 1.27)))
+						)
+						(number "5"
+							(effects (font (size 1.27 1.27)))
+						)
+					)
+					(pin power_in line
+						(at 17.78 10.16 180)
+						(length 5.08)
+						(name "VCC"
+							(effects (font (size 1.27 1.27)))
+						)
+						(number "6"
+							(effects (font (size 1.27 1.27)))
+						)
+					)
+					(pin power_in line
+						(at 17.78 7.62 180)
+						(length 5.08)
+						(name "GND7"
+							(effects (font (size 1.27 1.27)))
+						)
+						(number "7"
+							(effects (font (size 1.27 1.27)))
+						)
+					)
+					(pin power_in line
+						(at -7.62 -22.86 90)
+						(length 5.08)
+						(name "GND8"
+							(effects (font (size 1.27 1.27)))
+						)
+						(number "8"
+							(effects (font (size 1.27 1.27)))
+						)
+					)
+					(pin power_in line
+						(at -2.54 -22.86 90)
+						(length 5.08)
+						(name "GND9"
+							(effects (font (size 1.27 1.27)))
+						)
+						(number "9"
+							(effects (font (size 1.27 1.27)))
+						)
+					)
+					(pin power_in line
+						(at 2.54 -22.86 90)
+						(length 5.08)
+						(name "GND10"
+							(effects (font (size 1.27 1.27)))
+						)
+						(number "10"
+							(effects (font (size 1.27 1.27)))
+						)
+					)
+					(pin power_in line
+						(at 7.62 -22.86 90)
+						(length 5.08)
+						(name "GND11"
+							(effects (font (size 1.27 1.27)))
+						)
+						(number "11"
+							(effects (font (size 1.27 1.27)))
+						)
+					)
+				)
+			)
+		(symbol "power:GND"
+				(power global)
+				(pin_numbers
+					(hide yes)
+				)
+				(pin_names
+					(offset 0)
+					(hide yes)
+				)
+				(exclude_from_sim no)
+				(in_bom yes)
+				(on_board yes)
+				(in_pos_files yes)
+				(duplicate_pin_numbers_are_jumpers no)
+				(property "Reference" "#PWR"
+					(at 0 -6.35 0)
+					(show_name no)
+					(do_not_autoplace no)
+					(hide yes)
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(property "Value" "GND"
+					(at 0 -3.81 0)
+					(show_name no)
+					(do_not_autoplace no)
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(property "Footprint" ""
+					(at 0 0 0)
+					(show_name no)
+					(do_not_autoplace no)
+					(hide yes)
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(property "Datasheet" ""
+					(at 0 0 0)
+					(show_name no)
+					(do_not_autoplace no)
+					(hide yes)
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+					(at 0 0 0)
+					(show_name no)
+					(do_not_autoplace no)
+					(hide yes)
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(property "ki_keywords" "global power"
+					(at 0 0 0)
+					(show_name no)
+					(do_not_autoplace no)
+					(hide yes)
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(symbol "GND_0_1"
+					(polyline
+						(pts
+							(xy 0 0) (xy 0 -1.27) (xy 1.27 -1.27) (xy 0 -2.54) (xy -1.27 -1.27) (xy 0 -1.27)
+						)
+						(stroke
+							(width 0)
+							(type default)
+						)
+						(fill
+							(type none)
+						)
+					)
+				)
+				(symbol "GND_1_1"
+					(pin power_in line
+						(at 0 0 270)
+						(length 0)
+						(name ""
+							(effects
+								(font
+									(size 1.27 1.27)
+								)
+							)
+						)
+						(number "1"
+							(effects
+								(font
+									(size 1.27 1.27)
+								)
+							)
+						)
+					)
+				)
+				(embedded_fonts no)
+			)
+	)
+	(wire (pts (xy 78.74 68.58) (xy 83.82 68.58)) (stroke (width 0) (type solid)) (uuid "822f7686-a4de-4f9f-9f3c-11032dffd628"))
+	(wire (pts (xy 53.34 38.1) (xy 53.34 43.18)) (stroke (width 0) (type solid)) (uuid "552ff01d-ab19-4ac7-ad83-e59c7208d6a7"))
+	(wire (pts (xy 58.42 38.1) (xy 58.42 43.18)) (stroke (width 0) (type solid)) (uuid "748b31d9-0edb-4c9d-be44-ca8a540fc9ea"))
+	(wire (pts (xy 63.5 38.1) (xy 63.5 43.18)) (stroke (width 0) (type solid)) (uuid "6340febf-7a60-44ac-b64d-329c6763b10b"))
+	(wire (pts (xy 68.58 38.1) (xy 68.58 43.18)) (stroke (width 0) (type solid)) (uuid "e0d12e69-3a67-4870-bc3e-0fd517e5232c"))
+	(global_label "E22_M0" (shape input) (at 43.18 71.12 0) (effects (font (size 1.27 1.27)) (justify left bottom)) (uuid "643f2f0f-12f1-4573-a1f4-c938b903e969")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}" (at 43.18 71.12 0) (effects (font (size 1.27 1.27)) (hide yes)))
+	)
+	(global_label "E22_M1" (shape input) (at 43.18 68.58 0) (effects (font (size 1.27 1.27)) (justify left bottom)) (uuid "7d0c6a15-483c-47e0-b424-2c9c4d5724b8")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}" (at 43.18 68.58 0) (effects (font (size 1.27 1.27)) (hide yes)))
+	)
+	(global_label "E22_RXD" (shape input) (at 43.18 66.04 0) (effects (font (size 1.27 1.27)) (justify left bottom)) (uuid "dfdd85fb-b966-4286-8640-6b5e0234e95a")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}" (at 43.18 66.04 0) (effects (font (size 1.27 1.27)) (hide yes)))
+	)
+	(global_label "E22_TXD" (shape output) (at 43.18 63.5 0) (effects (font (size 1.27 1.27)) (justify left bottom)) (uuid "06a637a7-3783-4727-8d4c-b9fda18d0d07")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}" (at 43.18 63.5 0) (effects (font (size 1.27 1.27)) (hide yes)))
+	)
+	(global_label "E22_AUX" (shape output) (at 43.18 60.96 0) (effects (font (size 1.27 1.27)) (justify left bottom)) (uuid "852e1c62-767a-46db-bfb7-f73421a58ff5")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}" (at 43.18 60.96 0) (effects (font (size 1.27 1.27)) (hide yes)))
+	)
+	(global_label "E22_VCC" (shape input) (at 78.74 71.12 180) (effects (font (size 1.27 1.27)) (justify left bottom)) (uuid "c34f8c4d-9448-4c32-8747-034672c845c9")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}" (at 78.74 71.12 0) (effects (font (size 1.27 1.27)) (hide yes)))
+	)
+	(text "EBYTE E22-900T30D: UART (RXD/TXD cross-connected to ESP32 in\nesp32.kicad_sch), M0/M1 mode select, AUX status, VCC from dedicated\nbuck rail (power.kicad_sch). No RF trace - module's own SMA-K\nantenna connector is mounted through the enclosure panel directly." (at 12.7 15.24 0) (effects (font (size 1.5 1.5))) (uuid "b20c2e0c-8f43-49c3-a469-730bb6cf64c1"))
+	(symbol (lib_id "TUAV_Parts:E22-900T30D") (at 60.96 60.96 0) (unit 1)
+		(exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
+		(uuid "b1189faf-09a5-4652-a52e-a9847cddd10d")
+		(property "Reference" "E1" (at 63.5 58.42 0) (effects (font (size 1.27 1.27))))
+		(property "Value" "E22-900T30D" (at 63.5 55.88 0) (effects (font (size 1.27 1.27))))
+		(property "Footprint" "TUAV_Modules:E22-900T30D" (at 60.96 60.96 0) (effects (font (size 1.27 1.27)) (hide yes)))
+		(property "Description" "LoRa 868/915MHz 30dBm module - integrated SMA-K, mounted through enclosure panel, no PCB RF trace" (at 60.96 60.96 0) (effects (font (size 1.27 1.27)) (hide yes)))
+		(pin "1" (uuid "ca5e7e7b-b620-4ce0-9351-e11e606e38f1"))
+		(pin "2" (uuid "339b363c-42a7-474f-9318-77da1bd91e9d"))
+		(pin "3" (uuid "b57261a6-9e8f-46db-b26d-aaba97b6d76e"))
+		(pin "4" (uuid "e19e16b9-491f-47e3-9f31-92541bd031f0"))
+		(pin "5" (uuid "08c6cd19-894b-4980-83a1-78284770248a"))
+		(pin "6" (uuid "9c5b6803-7b9e-4885-9b92-4cbc9e4eccbf"))
+		(pin "7" (uuid "3be2f40b-aa3c-410b-a165-a45b9412fe0c"))
+		(pin "8" (uuid "d9834c02-393f-47ab-91c2-27a6b5038c37"))
+		(pin "9" (uuid "9cc77829-9766-41d5-96eb-497a554119cd"))
+		(pin "10" (uuid "ef6a1484-e409-4edd-8279-a6fd842ad719"))
+		(pin "11" (uuid "1f316c88-982c-4c71-a408-4e20de4f12ce"))
+		(instances
+			(project "tx_rf"
+				(path "/707d95ef-9372-4357-a2cd-e1c900da31e4/e63e1c2f-1da1-4918-86b2-8643426c8456"
+					(reference "E1") (unit 1)
+				)
+			)
+			(project "rx_rf"
+				(path "/bc3e2d95-5c28-4506-ac8d-dcd884587ee6/d88032ba-b0c6-4a4b-9cf0-779e3fb9f54a"
+					(reference "E1") (unit 1)
+				)
+			)
+		)
+	)
+	(symbol (lib_id "power:GND") (at 83.82 68.58 0) (unit 1)
+		(exclude_from_sim no) (in_bom no) (on_board no) (dnp no)
+		(uuid "cdced63d-fb11-45d7-96a5-5e4d0ebfd45b")
+		(property "Reference" "#PWR01" (at 86.36 66.03999999999999 0) (effects (font (size 1.27 1.27))))
+		(property "Value" "GND" (at 86.36 63.5 0) (effects (font (size 1.27 1.27))))
+		(pin "1" (uuid "3e43ac25-fe44-4599-9d0a-632ea20ddbba"))
+		(instances
+			(project "tx_rf"
+				(path "/707d95ef-9372-4357-a2cd-e1c900da31e4/e63e1c2f-1da1-4918-86b2-8643426c8456"
+					(reference "#PWR01") (unit 1)
+				)
+			)
+			(project "rx_rf"
+				(path "/bc3e2d95-5c28-4506-ac8d-dcd884587ee6/d88032ba-b0c6-4a4b-9cf0-779e3fb9f54a"
+					(reference "#PWR01") (unit 1)
+				)
+			)
+		)
+	)
+	(symbol (lib_id "power:GND") (at 53.34 43.18 0) (unit 1)
+		(exclude_from_sim no) (in_bom no) (on_board no) (dnp no)
+		(uuid "98aa838d-9534-480c-ba00-ecea61ccbb81")
+		(property "Reference" "#PWR02" (at 55.88 40.64 0) (effects (font (size 1.27 1.27))))
+		(property "Value" "GND" (at 55.88 38.1 0) (effects (font (size 1.27 1.27))))
+		(pin "1" (uuid "777ba902-eeb5-4b94-aba2-54eed052850e"))
+		(instances
+			(project "tx_rf"
+				(path "/707d95ef-9372-4357-a2cd-e1c900da31e4/e63e1c2f-1da1-4918-86b2-8643426c8456"
+					(reference "#PWR02") (unit 1)
+				)
+			)
+			(project "rx_rf"
+				(path "/bc3e2d95-5c28-4506-ac8d-dcd884587ee6/d88032ba-b0c6-4a4b-9cf0-779e3fb9f54a"
+					(reference "#PWR02") (unit 1)
+				)
+			)
+		)
+	)
+	(symbol (lib_id "power:GND") (at 58.42 43.18 0) (unit 1)
+		(exclude_from_sim no) (in_bom no) (on_board no) (dnp no)
+		(uuid "380f48ba-92a6-4c65-8837-c6c61f605b1c")
+		(property "Reference" "#PWR03" (at 60.96 40.64 0) (effects (font (size 1.27 1.27))))
+		(property "Value" "GND" (at 60.96 38.1 0) (effects (font (size 1.27 1.27))))
+		(pin "1" (uuid "5cabb759-f2fb-4805-bd34-d4573f1e44cf"))
+		(instances
+			(project "tx_rf"
+				(path "/707d95ef-9372-4357-a2cd-e1c900da31e4/e63e1c2f-1da1-4918-86b2-8643426c8456"
+					(reference "#PWR03") (unit 1)
+				)
+			)
+			(project "rx_rf"
+				(path "/bc3e2d95-5c28-4506-ac8d-dcd884587ee6/d88032ba-b0c6-4a4b-9cf0-779e3fb9f54a"
+					(reference "#PWR03") (unit 1)
+				)
+			)
+		)
+	)
+	(symbol (lib_id "power:GND") (at 63.5 43.18 0) (unit 1)
+		(exclude_from_sim no) (in_bom no) (on_board no) (dnp no)
+		(uuid "84473f0f-8030-49b0-a538-bf1355c1922c")
+		(property "Reference" "#PWR04" (at 66.04 40.64 0) (effects (font (size 1.27 1.27))))
+		(property "Value" "GND" (at 66.04 38.1 0) (effects (font (size 1.27 1.27))))
+		(pin "1" (uuid "6acc665c-88a1-488a-b862-ed9d4baed398"))
+		(instances
+			(project "tx_rf"
+				(path "/707d95ef-9372-4357-a2cd-e1c900da31e4/e63e1c2f-1da1-4918-86b2-8643426c8456"
+					(reference "#PWR04") (unit 1)
+				)
+			)
+			(project "rx_rf"
+				(path "/bc3e2d95-5c28-4506-ac8d-dcd884587ee6/d88032ba-b0c6-4a4b-9cf0-779e3fb9f54a"
+					(reference "#PWR04") (unit 1)
+				)
+			)
+		)
+	)
+	(symbol (lib_id "power:GND") (at 68.58 43.18 0) (unit 1)
+		(exclude_from_sim no) (in_bom no) (on_board no) (dnp no)
+		(uuid "e1c5326c-e5b5-463a-98d3-59e4813c0d6b")
+		(property "Reference" "#PWR05" (at 71.12 40.64 0) (effects (font (size 1.27 1.27))))
+		(property "Value" "GND" (at 71.12 38.1 0) (effects (font (size 1.27 1.27))))
+		(pin "1" (uuid "6ec7bb3b-2dc3-45bc-9da3-73e11ec3ad0c"))
+		(instances
+			(project "tx_rf"
+				(path "/707d95ef-9372-4357-a2cd-e1c900da31e4/e63e1c2f-1da1-4918-86b2-8643426c8456"
+					(reference "#PWR05") (unit 1)
+				)
+			)
+			(project "rx_rf"
+				(path "/bc3e2d95-5c28-4506-ac8d-dcd884587ee6/d88032ba-b0c6-4a4b-9cf0-779e3fb9f54a"
+					(reference "#PWR05") (unit 1)
+				)
+			)
+		)
+	)
+	(sheet_instances
+		(path "/" (page "1"))
+	)
+)

@@ -1,0 +1,41 @@
+(kicad_sch
+	(version 20250114)
+	(generator "tuav_gen_sch")
+	(generator_version "10.0")
+	(uuid "707d95ef-9372-4357-a2cd-e1c900da31e4")
+	(paper "A4")
+	(lib_symbols
+	)
+	(text "LoRa Telemetry TX - RF board (E22 + Pixhawk connector)\nStacks directly on top of the main board (DevKitC-1+power): J4\n(male header, TX_Connectors sheet) is mounted on this board's\nBACK side in the PCB layout, plugging down into main's female\nsocket - board sits right-side-up, nothing flipped. Config\nbutton + link LED are broken out via jumper wires (J5) since\nthey need to stay human-accessible once stacked." (at 12.7 70 0) (effects (font (size 1.5 1.5))) (uuid "4b8642a4-a04b-4bf3-8825-918f55b6cb2b"))
+	(sheet (at 20.32 20.32) (size 60.96 40.64)
+		(exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
+		(stroke (width 0.1524) (type solid)) (fill (color 0 0 0 0.0))
+		(uuid "e63e1c2f-1da1-4918-86b2-8643426c8456")
+		(property "Sheetname" "E22_RF" (at 20.32 19.32 0) (effects (font (size 1.27 1.27)) (justify left bottom)))
+		(property "Sheetfile" "../common/e22_rf.kicad_sch" (at 20.32 61.96 0) (effects (font (size 1.27 1.27)) (hide yes) (justify left top)))
+		(instances
+			(project "tx_rf"
+				(path "/707d95ef-9372-4357-a2cd-e1c900da31e4"
+					(page "2")
+				)
+			)
+		)
+	)
+	(sheet (at 96.52 20.32) (size 60.96 40.64)
+		(exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
+		(stroke (width 0.1524) (type solid)) (fill (color 0 0 0 0.0))
+		(uuid "9147674f-4637-437f-8a07-2302327a41a1")
+		(property "Sheetname" "TX_Connectors" (at 96.52 19.32 0) (effects (font (size 1.27 1.27)) (justify left bottom)))
+		(property "Sheetfile" "tx_connectors.kicad_sch" (at 96.52 61.96 0) (effects (font (size 1.27 1.27)) (hide yes) (justify left top)))
+		(instances
+			(project "tx_rf"
+				(path "/707d95ef-9372-4357-a2cd-e1c900da31e4"
+					(page "3")
+				)
+			)
+		)
+	)
+	(sheet_instances
+		(path "/" (page "1"))
+	)
+)

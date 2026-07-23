@@ -1,0 +1,41 @@
+(kicad_sch
+	(version 20250114)
+	(generator "tuav_gen_sch")
+	(generator_version "10.0")
+	(uuid "bc3e2d95-5c28-4506-ac8d-dcd884587ee6")
+	(paper "A4")
+	(lib_symbols
+	)
+	(text "LoRa Telemetry RX - RF board (E22 + OLED)\nStacks directly on top of the main board (DevKitC-1+power): J4\n(male header, RX_Connectors sheet) is mounted on this board's\nBACK side in the PCB layout, plugging down into main's female\nsocket - board sits right-side-up, nothing flipped. Config\nbutton + link LED are broken out via jumper wires (J5); OLED\n(J3) is jumper-wired too so the screen stays visible once\nstacked." (at 12.7 70 0) (effects (font (size 1.5 1.5))) (uuid "5293d47b-ccde-477e-abef-414c326fc0ed"))
+	(sheet (at 20.32 20.32) (size 60.96 40.64)
+		(exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
+		(stroke (width 0.1524) (type solid)) (fill (color 0 0 0 0.0))
+		(uuid "d88032ba-b0c6-4a4b-9cf0-779e3fb9f54a")
+		(property "Sheetname" "E22_RF" (at 20.32 19.32 0) (effects (font (size 1.27 1.27)) (justify left bottom)))
+		(property "Sheetfile" "../common/e22_rf.kicad_sch" (at 20.32 61.96 0) (effects (font (size 1.27 1.27)) (hide yes) (justify left top)))
+		(instances
+			(project "rx_rf"
+				(path "/bc3e2d95-5c28-4506-ac8d-dcd884587ee6"
+					(page "2")
+				)
+			)
+		)
+	)
+	(sheet (at 96.52 20.32) (size 60.96 40.64)
+		(exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
+		(stroke (width 0.1524) (type solid)) (fill (color 0 0 0 0.0))
+		(uuid "9f899d90-16a9-4352-b2be-392524b0e231")
+		(property "Sheetname" "RX_Connectors" (at 96.52 19.32 0) (effects (font (size 1.27 1.27)) (justify left bottom)))
+		(property "Sheetfile" "rx_connectors.kicad_sch" (at 96.52 61.96 0) (effects (font (size 1.27 1.27)) (hide yes) (justify left top)))
+		(instances
+			(project "rx_rf"
+				(path "/bc3e2d95-5c28-4506-ac8d-dcd884587ee6"
+					(page "3")
+				)
+			)
+		)
+	)
+	(sheet_instances
+		(path "/" (page "1"))
+	)
+)

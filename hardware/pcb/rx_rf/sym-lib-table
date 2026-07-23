@@ -1,0 +1,4 @@
+(sym_lib_table
+	(version 7)
+	(lib (name "TUAV_Parts") (type "KiCad") (uri "${KIPRJMOD}/../libraries/symbols/TUAV_Parts.kicad_sym") (options "") (descr "TUAV LoRa telemetry node - project-specific symbols (E22-900T30D, ESP32-S3-DevKitC-1 socket)"))
+)

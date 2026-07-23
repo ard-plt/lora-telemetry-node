@@ -1,0 +1,41 @@
+(kicad_sch
+	(version 20250114)
+	(generator "tuav_gen_sch")
+	(generator_version "10.0")
+	(uuid "f2d205fc-a7fd-4273-934a-b0537e2f9dc5")
+	(paper "A4")
+	(lib_symbols
+	)
+	(text "LoRa Telemetry - MAIN board (DevKitC-1 + power block)\nShared design: identical for TX and RX (order 2 copies).\nStacks with a matching RF board (tx_rf or rx_rf) directly on top:\nJ4 here is a FEMALE socket (top side, like the DevKit socket);\nthe RF board's matching MALE header is mounted on ITS back side,\nso the RF board sits right-side-up directly above main, pins\nplugging down - no flipping, nothing sandwiched. The RF board's\nbutton/LED (and RX's OLED) are broken out via jumper wires since\nthey need to stay human-accessible once stacked. Cross-sheet nets\nuse global labels (VSYS, E22_VCC, +3V3, GND, and everything the\nRF board needs)." (at 12.7 70 0) (effects (font (size 1.5 1.5))) (uuid "e9fd7ace-c6f8-4731-9c28-c9daea78c185"))
+	(sheet (at 20.32 20.32) (size 60.96 40.64)
+		(exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
+		(stroke (width 0.1524) (type solid)) (fill (color 0 0 0 0.0))
+		(uuid "04cec84e-96d9-4b61-81fc-c52412ae3202")
+		(property "Sheetname" "Power" (at 20.32 19.32 0) (effects (font (size 1.27 1.27)) (justify left bottom)))
+		(property "Sheetfile" "../common/power.kicad_sch" (at 20.32 61.96 0) (effects (font (size 1.27 1.27)) (hide yes) (justify left top)))
+		(instances
+			(project "main"
+				(path "/f2d205fc-a7fd-4273-934a-b0537e2f9dc5"
+					(page "2")
+				)
+			)
+		)
+	)
+	(sheet (at 96.52 20.32) (size 60.96 40.64)
+		(exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
+		(stroke (width 0.1524) (type solid)) (fill (color 0 0 0 0.0))
+		(uuid "d9ffc6fb-afe4-4678-8aca-5f2149e823d6")
+		(property "Sheetname" "ESP32_DevKitC1" (at 96.52 19.32 0) (effects (font (size 1.27 1.27)) (justify left bottom)))
+		(property "Sheetfile" "../common/esp32.kicad_sch" (at 96.52 61.96 0) (effects (font (size 1.27 1.27)) (hide yes) (justify left top)))
+		(instances
+			(project "main"
+				(path "/f2d205fc-a7fd-4273-934a-b0537e2f9dc5"
+					(page "3")
+				)
+			)
+		)
+	)
+	(sheet_instances
+		(path "/" (page "1"))
+	)
+)
